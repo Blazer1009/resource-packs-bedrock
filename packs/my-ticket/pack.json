@@ -2,7 +2,7 @@
   "name": "My Ticket",
   "description": "Turns Light 0 into a custom ticket item for servers and events.",
 
-  "normal": "https://github.com/Blazer1009/my-ticket-bedrock/releases/download/26.5/MyTicketNoExtraMods-26.45+.zip",
+  "normal": "https://github.com/Blazer1009/my-ticket-bedrock/releases/download/26.5/MyTicketNoExtraMods-26.45+.mcpack",
 
-  "full": "https://github.com/Blazer1009/my-ticket-bedrock/releases/download/26.5/MyTicket-26.45.zip"
+  "full": "https://github.com/Blazer1009/my-ticket-bedrock/releases/download/26.5/MyTicket-26.45.mcpack"
 }
