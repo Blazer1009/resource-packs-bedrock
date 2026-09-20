@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blazer1009's Bedrock Resource Packs</title>
-<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="./style.css">
 
 <style>
-  /* GitHub Icon Styles */
   #github-link {
     position: fixed;
     top: 10px;
@@ -28,7 +28,6 @@
     transform: scale(1.2);
   }
 
-  /* Java switch button */
   .java-link {
     display: inline-block;
     margin: 10px auto;
@@ -51,7 +50,6 @@
     margin-top: 10px;
   }
 
-  /* Loading / Error Messages */
   .loading-message,
   .error-message {
     text-align: center;
@@ -70,7 +68,6 @@
     color: #a00000;
   }
 
-  /* Pack Error */
   .pack-error {
     padding: 15px;
     margin: 10px;
@@ -101,7 +98,7 @@ id="github-link"
 ```
   src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
   alt="GitHub"
-/>
+>
 ```
 
   </a>
@@ -176,142 +173,166 @@ id="github-link"
 
   </section>
 
-  <script>
-    async function loadPacks() {
-      const gallery = document.getElementById("gallery");
+<script>
+async function loadPacks() {
+  const gallery = document.getElementById("gallery");
 
+  /*
+   * Get the directory that contains index.html.
+   * This makes the site work even when hosted at:
+   *
+   * https://username.github.io/repository/
+   */
+  const basePath = window.location.href.substring(
+    0,
+    window.location.href.lastIndexOf("/") + 1
+  );
+
+  const packsJsonUrl = new URL(
+    "packs/packs.json",
+    basePath
+  );
+
+  try {
+    console.log("Loading:", packsJsonUrl.href);
+
+    const packsResponse = await fetch(packsJsonUrl.href);
+
+    if (!packsResponse.ok) {
+      throw new Error(
+        `packs.json returned HTTP ${packsResponse.status}`
+      );
+    }
+
+    const packFolders = await packsResponse.json();
+
+    if (!Array.isArray(packFolders)) {
+      throw new Error(
+        "packs.json must contain an array of folder names."
+      );
+    }
+
+    gallery.innerHTML = "";
+
+    for (const folder of packFolders) {
       try {
-        // Load the list of pack folders
-        const packsResponse = await fetch("packs/packs.json");
+        const packJsonUrl = new URL(
+          `packs/${folder}/pack.json`,
+          basePath
+        );
 
-        if (!packsResponse.ok) {
+        console.log("Loading:", packJsonUrl.href);
+
+        const dataResponse = await fetch(packJsonUrl.href);
+
+        if (!dataResponse.ok) {
           throw new Error(
-            `Could not load packs.json (HTTP ${packsResponse.status})`
+            `${packJsonUrl.href} returned HTTP ${dataResponse.status}`
           );
         }
 
-        const packFolders = await packsResponse.json();
+        const pack = await dataResponse.json();
 
-        // Make sure packs.json contains an array
-        if (!Array.isArray(packFolders)) {
-          throw new Error("packs.json must contain an array of pack folders.");
+        const div = document.createElement("div");
+        div.className = "pack";
+
+        /*
+         * Screenshot
+         */
+        const image = document.createElement("img");
+
+        image.src = new URL(
+          `packs/${folder}/screenshot.png`,
+          basePath
+        ).href;
+
+        image.alt = pack.name || "Resource Pack";
+
+        /*
+         * Name
+         */
+        const title = document.createElement("h2");
+        title.textContent = pack.name || "Unnamed Pack";
+
+        /*
+         * Description
+         */
+        const description = document.createElement("p");
+        description.className = "pack-desc";
+        description.textContent =
+          pack.description || "No description yet.";
+
+        div.appendChild(image);
+        div.appendChild(title);
+        div.appendChild(description);
+
+        /*
+         * Normal download
+         */
+        if (pack.normal) {
+          const normalLink = document.createElement("a");
+
+          normalLink.href = pack.normal;
+          normalLink.className = "github";
+          normalLink.textContent = "Download (Normal)";
+          normalLink.target = "_blank";
+          normalLink.rel = "noopener noreferrer";
+
+          div.appendChild(normalLink);
         }
 
-        // Clear loading message
-        gallery.innerHTML = "";
+        /*
+         * Full / Extra Mods download
+         */
+        if (pack.full) {
+          const fullLink = document.createElement("a");
 
-        // Load each pack
-        for (const folder of packFolders) {
-          try {
-            const dataResponse = await fetch(
-              `packs/${folder}/pack.json`
-            );
+          fullLink.href = pack.full;
+          fullLink.className = "github";
+          fullLink.textContent = "Download (🔥 Extra Mods)";
+          fullLink.target = "_blank";
+          fullLink.rel = "noopener noreferrer";
 
-            if (!dataResponse.ok) {
-              throw new Error(
-                `Could not load pack.json (HTTP ${dataResponse.status})`
-              );
-            }
-
-            const pack = await dataResponse.json();
-
-            // Create pack card
-            const div = document.createElement("div");
-            div.className = "pack";
-
-            // Pack image
-            const image = document.createElement("img");
-            image.src = `packs/${folder}/screenshot.png`;
-            image.alt = pack.name || "Resource Pack";
-
-            // Pack title
-            const title = document.createElement("h2");
-            title.textContent = pack.name || "Unnamed Pack";
-
-            // Pack description
-            const description = document.createElement("p");
-            description.className = "pack-desc";
-            description.textContent =
-              pack.description || "No description yet.";
-
-            // Add everything to card
-            div.appendChild(image);
-            div.appendChild(title);
-            div.appendChild(description);
-
-            // Normal download
-            if (pack.normal) {
-              const normalLink = document.createElement("a");
-
-              normalLink.href = pack.normal;
-              normalLink.className = "github";
-              normalLink.textContent = "Download (Normal)";
-              normalLink.target = "_blank";
-              normalLink.rel = "noopener noreferrer";
-
-              div.appendChild(normalLink);
-            }
-
-            // Full / extra mods download
-            if (pack.full) {
-              const fullLink = document.createElement("a");
-
-              fullLink.href = pack.full;
-              fullLink.className = "github";
-              fullLink.textContent = "Download (🔥 Extra Mods)";
-              fullLink.target = "_blank";
-              fullLink.rel = "noopener noreferrer";
-
-              div.appendChild(fullLink);
-            }
-
-            // Add pack to gallery
-            gallery.appendChild(div);
-
-          } catch (error) {
-            console.error(`Error loading pack "${folder}":`, error);
-
-            // Show an error for this individual pack
-            const errorDiv = document.createElement("div");
-            errorDiv.className = "pack-error";
-
-            errorDiv.innerHTML = `
-              <strong>Could not load "${folder}"</strong>
-              <p>Check that packs/${folder}/pack.json exists and contains valid JSON.</p>
-            `;
-
-            gallery.appendChild(errorDiv);
-          }
+          div.appendChild(fullLink);
         }
 
-        // If no packs were loaded
-        if (gallery.children.length === 0) {
-          gallery.innerHTML = `
-            <p class="error-message">
-              No resource packs were found.
-            </p>
-          `;
-        }
+        gallery.appendChild(div);
 
       } catch (error) {
-        console.error("Error loading resource packs:", error);
+        console.error(
+          `Error loading pack "${folder}":`,
+          error
+        );
 
-        gallery.innerHTML = `
-          <div class="error-message">
-            <strong>Could not load resource packs.</strong>
-            <p>${error.message}</p>
-            <p>
-              Make sure <code>packs/packs.json</code> exists and contains
-              valid JSON.
-            </p>
-          </div>
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "pack-error";
+
+        errorDiv.innerHTML = `
+          <strong>Could not load "${folder}"</strong>
+          <p>${error.message}</p>
         `;
+
+        gallery.appendChild(errorDiv);
       }
     }
 
-    // Start loading packs
-    loadPacks();
-  </script>
+  } catch (error) {
+    console.error(
+      "Error loading resource packs:",
+      error
+    );
+
+    gallery.innerHTML = `
+      <div class="error-message">
+        <strong>Could not load resource packs.</strong>
+        <p>${error.message}</p>
+      </div>
+    `;
+  }
+}
+
+loadPacks();
+</script>
 
 </body>
 </html>
