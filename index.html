@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blazer1009's Bedrock Resource Packs</title>
 <link rel="stylesheet" href="style.css">
 
@@ -26,7 +28,7 @@
     transform: scale(1.2);
   }
 
-  /* 🔁 Java switch button */
+  /* Java switch button */
   .java-link {
     display: inline-block;
     margin: 10px auto;
@@ -48,88 +50,266 @@
     text-align: center;
     margin-top: 10px;
   }
+
+  /* Loading / Error Messages */
+  .loading-message,
+  .error-message {
+    text-align: center;
+    margin: 20px auto;
+    padding: 15px;
+    max-width: 600px;
+    border-radius: 8px;
+  }
+
+  .loading-message {
+    background: #f0f0f0;
+  }
+
+  .error-message {
+    background: #ffe0e0;
+    color: #a00000;
+  }
+
+  /* Pack Error */
+  .pack-error {
+    padding: 15px;
+    margin: 10px;
+    background: #ffe0e0;
+    color: #a00000;
+    border-radius: 8px;
+  }
 </style>
+
 </head>
 
 <body>
 
   <!-- GitHub icon -->
-  <a href="https://github.com/Blazer1009" target="_blank" id="github-link">
-    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" />
+
+<a
+href="https://github.com/Blazer1009"
+target="_blank"
+rel="noopener noreferrer"
+id="github-link"
+
+>
+
+```
+<img
+```
+
+```
+  src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+  alt="GitHub"
+/>
+```
+
   </a>
 
   <h1>Blazer1009's Bedrock Resource Packs</h1>
 
-  <!-- 🔁 SWITCH BUTTON -->
+  <!-- Switch to Java Edition -->
+
   <div class="switch-container">
-    <a class="java-link" href="https://blazer1009.github.io/resource-packs-java/">
+    <a
+      class="java-link"
+      href="https://blazer1009.github.io/resource-packs-java/"
+    >
       🌿 Switch to Java Edition Packs
     </a>
   </div>
 
-  <div class="pack-gallery" id="gallery"></div>
+  <!-- Pack Gallery -->
+
+  <div class="pack-gallery" id="gallery">
+    <p class="loading-message">Loading resource packs...</p>
+  </div>
 
   <!-- FAQ SECTION -->
+
   <section class="faq">
     <h2>FAQ</h2>
 
-    <div class="faq-item">
-      <h3>How do I use these resource packs?</h3>
-      <p>Download the .mcpack or .mcaddon file and open it to automatically import into Minecraft Bedrock. You can also place extracted packs into the "resource_packs" and/or the "behavior_packs" folder inside the com.mojang directory.</p>
-    </div>
+```
+<div class="faq-item">
+  <h3>How do I use these resource packs?</h3>
+  <p>
+    Download the .mcpack or .mcaddon file and open it to automatically
+    import into Minecraft Bedrock. You can also place extracted packs
+    into the "resource_packs" and/or the "behavior_packs" folder inside
+    the com.mojang directory.
+  </p>
+</div>
 
-    <div class="faq-item">
-      <h3>Do I need addons or mods?</h3>
-      <p>No. These are vanilla Minecraft Bedrock resource packs unless stated otherwise.</p>
-    </div>
+<div class="faq-item">
+  <h3>Do I need addons or mods?</h3>
+  <p>
+    No. These are vanilla Minecraft Bedrock resource packs unless stated
+    otherwise.
+  </p>
+</div>
 
-    <div class="faq-item">
-      <h3>How does the ticket pack work?</h3>
-      <p>Rename Light 0 in an anvil to "Ticket" and it will turn into a custom ticket item. Perfect for servers, events, and maps.</p>
-    </div>
+<div class="faq-item">
+  <h3>How does the ticket pack work?</h3>
+  <p>
+    Rename Light 0 in an anvil to "Ticket" and it will turn into a custom
+    ticket item. Perfect for servers, events, and maps.
+  </p>
+</div>
 
-    <div class="faq-item">
-      <h3>Why do some packs have two versions?</h3>
-      <p>The standard version works on all Bedrock devices, while the enhanced version includes extra visuals or experimental features (when supported).</p>
-    </div>
+<div class="faq-item">
+  <h3>Why do some packs have two versions?</h3>
+  <p>
+    The standard version works on all Bedrock devices, while the enhanced
+    version includes extra visuals or experimental features (when
+    supported).
+  </p>
+</div>
 
-    <div class="faq-item">
-      <h3>Can I use these on servers?</h3>
-      <p>Yes. They work on Bedrock servers and worlds that allow resource packs. </p>
-    </div>
+<div class="faq-item">
+  <h3>Can I use these on servers?</h3>
+  <p>
+    Yes. They work on Bedrock servers and worlds that allow resource packs.
+  </p>
+</div>
+```
 
   </section>
 
   <script>
     async function loadPacks() {
-      const gallery = document.getElementById('gallery');
+      const gallery = document.getElementById("gallery");
 
-      const packsResponse = await fetch('packs/packs.json');
-      const packFolders = await packsResponse.json();
+      try {
+        // Load the list of pack folders
+        const packsResponse = await fetch("packs/packs.json");
 
-      for (const folder of packFolders) {
-        const dataResponse = await fetch(`packs/${folder}/pack.json`);
-        const pack = await dataResponse.json();
+        if (!packsResponse.ok) {
+          throw new Error(
+            `Could not load packs.json (HTTP ${packsResponse.status})`
+          );
+        }
 
-        const div = document.createElement('div');
-        div.className = 'pack';
+        const packFolders = await packsResponse.json();
 
-        div.innerHTML = `
-          <img src="packs/${folder}/screenshot.png" alt="${pack.name}">
-          <h2>${pack.name}</h2>
-          <p class="pack-desc">${pack.description || "No description yet."}</p>
+        // Make sure packs.json contains an array
+        if (!Array.isArray(packFolders)) {
+          throw new Error("packs.json must contain an array of pack folders.");
+        }
+
+        // Clear loading message
+        gallery.innerHTML = "";
+
+        // Load each pack
+        for (const folder of packFolders) {
+          try {
+            const dataResponse = await fetch(
+              `packs/${folder}/pack.json`
+            );
+
+            if (!dataResponse.ok) {
+              throw new Error(
+                `Could not load pack.json (HTTP ${dataResponse.status})`
+              );
+            }
+
+            const pack = await dataResponse.json();
+
+            // Create pack card
+            const div = document.createElement("div");
+            div.className = "pack";
+
+            // Pack image
+            const image = document.createElement("img");
+            image.src = `packs/${folder}/screenshot.png`;
+            image.alt = pack.name || "Resource Pack";
+
+            // Pack title
+            const title = document.createElement("h2");
+            title.textContent = pack.name || "Unnamed Pack";
+
+            // Pack description
+            const description = document.createElement("p");
+            description.className = "pack-desc";
+            description.textContent =
+              pack.description || "No description yet.";
+
+            // Add everything to card
+            div.appendChild(image);
+            div.appendChild(title);
+            div.appendChild(description);
+
+            // Normal download
+            if (pack.normal) {
+              const normalLink = document.createElement("a");
+
+              normalLink.href = pack.normal;
+              normalLink.className = "github";
+              normalLink.textContent = "Download (Normal)";
+              normalLink.target = "_blank";
+              normalLink.rel = "noopener noreferrer";
+
+              div.appendChild(normalLink);
+            }
+
+            // Full / extra mods download
+            if (pack.full) {
+              const fullLink = document.createElement("a");
+
+              fullLink.href = pack.full;
+              fullLink.className = "github";
+              fullLink.textContent = "Download (🔥 Extra Mods)";
+              fullLink.target = "_blank";
+              fullLink.rel = "noopener noreferrer";
+
+              div.appendChild(fullLink);
+            }
+
+            // Add pack to gallery
+            gallery.appendChild(div);
+
+          } catch (error) {
+            console.error(`Error loading pack "${folder}":`, error);
+
+            // Show an error for this individual pack
+            const errorDiv = document.createElement("div");
+            errorDiv.className = "pack-error";
+
+            errorDiv.innerHTML = `
+              <strong>Could not load "${folder}"</strong>
+              <p>Check that packs/${folder}/pack.json exists and contains valid JSON.</p>
+            `;
+
+            gallery.appendChild(errorDiv);
+          }
+        }
+
+        // If no packs were loaded
+        if (gallery.children.length === 0) {
+          gallery.innerHTML = `
+            <p class="error-message">
+              No resource packs were found.
+            </p>
+          `;
+        }
+
+      } catch (error) {
+        console.error("Error loading resource packs:", error);
+
+        gallery.innerHTML = `
+          <div class="error-message">
+            <strong>Could not load resource packs.</strong>
+            <p>${error.message}</p>
+            <p>
+              Make sure <code>packs/packs.json</code> exists and contains
+              valid JSON.
+            </p>
+          </div>
         `;
-
-        if (pack.normal)
-          div.innerHTML += `<a href="${pack.normal}" class="github">Download (Normal)</a>`;
-
-        if (pack.full)
-          div.innerHTML += `<a href="${pack.full}" class="github">Download (🔥Extra Mods)</a>`;
-
-        gallery.appendChild(div);
       }
     }
 
+    // Start loading packs
     loadPacks();
   </script>
 
